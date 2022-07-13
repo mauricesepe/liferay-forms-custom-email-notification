@@ -1,0 +1,4 @@
+dependencies {
+	compileOnly group: "com.liferay", name: "com.liferay.dynamic.data.mapping.service"
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+}
