@@ -1,1 +1,9 @@
-// Check GETTING_STARTED.markdown for information regarding usage.
+subprojects {
+	afterEvaluate {
+		if (plugins.hasPlugin("base") && plugins.hasPlugin("com.liferay.source.formatter")) {
+			deploy.dependsOn formatSource
+		}
+	}
+}
+
+apply plugin: "com.liferay.source.formatter"

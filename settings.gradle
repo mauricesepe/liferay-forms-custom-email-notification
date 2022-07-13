@@ -1,5 +1,6 @@
 buildscript {
 	dependencies {
+        classpath group: "com.liferay", name: "com.liferay.gradle.plugins.source.formatter", version: "5.1.139"
 		classpath group: "biz.aQute.bnd", name: "biz.aQute.bnd", version: "5.2.0"
 		classpath(group: "com.liferay", name: "com.liferay.gradle.plugins.workspace", version: "3.4.38") {
 			exclude group: "biz.aQute.bnd", module: "biz.aQute.bnd"
