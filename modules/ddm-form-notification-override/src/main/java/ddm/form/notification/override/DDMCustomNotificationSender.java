@@ -195,8 +195,6 @@ public class DDMCustomNotificationSender
 		return ddmStructure.getDDMFormLayout();
 	}
 
-	/* TODO: Refactor to support more than 2 levels of nested items. */
-
 	protected List<DLFileEntry> getEmailAttachment(
 			DDMFormInstance ddmFormInstance,
 			DDMFormInstanceRecord ddmFormInstanceRecord)
@@ -216,38 +214,8 @@ public class DDMCustomNotificationSender
 		JSONArray fieldvalues = jsonObject.getJSONArray("fieldValues");
 
 		for (int i = 0; i < fieldvalues.length(); i++) {
-			boolean hasNestedFieldValues = fieldvalues.getJSONObject(
-				i
-			).has(
-				"nestedFieldValues"
-			);
-
-			if (hasNestedFieldValues) {
-				JSONArray nestedFieldValues = fieldvalues.getJSONObject(
-					i
-				).getJSONArray(
-					"nestedFieldValues"
-				);
-
-				for (int j = 0; j < nestedFieldValues.length(); j++) {
-					JSONObject value = nestedFieldValues.getJSONObject(
-						j
-					).getJSONObject(
-						"value"
-					);
-
-					_populateEmailAttachments(attachments, value, locale);
-				}
-			}
-			else {
-				JSONObject value = fieldvalues.getJSONObject(
-					i
-				).getJSONObject(
-					"value"
-				);
-
-				_populateEmailAttachments(attachments, value, locale);
-			}
+			_extractAttachmentFromJSON(
+				attachments, fieldvalues.getJSONObject(i), locale);
 		}
 
 		return attachments;
@@ -662,6 +630,28 @@ public class DDMCustomNotificationSender
 	@Reference(unbind = "-")
 	protected void setUserLocalService(UserLocalService userLocalService) {
 		_userLocalService = userLocalService;
+	}
+
+	private void _extractAttachmentFromJSON(
+		List<DLFileEntry> DLFileEntries, JSONObject jsonObject, Locale locale) {
+
+		JSONArray nestedFieldValues = jsonObject.getJSONArray(
+			"nestedFieldValues");
+
+		if ((null != nestedFieldValues) && (0 < nestedFieldValues.length())) {
+			for (int i = 0; i < nestedFieldValues.length(); i++) {
+				JSONObject nestedFieldValue = nestedFieldValues.getJSONObject(
+					i);
+
+				_extractAttachmentFromJSON(
+					DLFileEntries, nestedFieldValue, locale);
+			}
+		}
+		else {
+			JSONObject value = jsonObject.getJSONObject("value");
+
+			_populateEmailAttachments(DLFileEntries, value, locale);
+		}
 	}
 
 	private void _populateEmailAttachments(
